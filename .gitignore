@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+
+# Environments
+.venv/
+venv/
+env/
+.env
+*.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (לא מעלים דאטה אמיתי)
+data/raw/
+data/interim/
+data/processed/
+!data/.gitkeep
+
+# Logs / outputs
+logs/
+outputs/
+reports/
+
+# OS
+.DS_Store
+Thumbs.db

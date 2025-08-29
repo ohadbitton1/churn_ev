@@ -1,0 +1,28 @@
+# Core
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.1
+
+# Modeling
+xgboost==2.1.1
+lightgbm==4.5.0
+optuna==3.6.1
+
+# API
+fastapi==0.116.1
+uvicorn[standard]==0.30.6
+pydantic==2.8.2
+python-dotenv==1.0.1
+
+# Tracking & Monitoring
+mlflow==2.15.1
+evidently==0.4.38
+
+# Dev quality
+pytest==8.3.2
+pytest-cov==5.0.0
+black==24.8.0
+isort==5.13.2
+ruff==0.6.3
+mypy==1.11.2
+pre-commit==3.8.0
