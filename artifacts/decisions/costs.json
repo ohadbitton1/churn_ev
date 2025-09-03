@@ -1,0 +1,6 @@
+{
+  "FN_cost": 5.0,
+  "FP_cost": 1.0,
+  "TP_intervention_cost": 0.5,
+  "TN_cost": 0.0
+}

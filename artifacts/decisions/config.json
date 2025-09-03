@@ -1,0 +1,18 @@
+{
+  "model_version": "v1",
+  "generated_at": "2025-09-03T10:30:41.268523+00:00",
+  "costs": {
+    "FN_cost": 5.0,
+    "FP_cost": 1.0,
+    "TP_intervention_cost": 0.5,
+    "TN_cost": 0.0
+  },
+  "decision": {
+    "threshold": 0.405,
+    "expected_value": -1.5,
+    "tn": 3,
+    "fp": 0,
+    "fn": 0,
+    "tp": 3
+  }
+}
