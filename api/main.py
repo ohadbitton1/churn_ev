@@ -27,7 +27,8 @@ sys.path.extend([str(ROOT), str(ROOT / "src")])
 
 # Support both "features.*" and "src.features.*" import styles
 try:
-    from features.build_features import AddFeatures  # noqa: F401
+    from src.features.build_features import AddFeatures  # noqa: F401
+
 except ModuleNotFoundError:
     from src.features.build_features import AddFeatures  # noqa: F401
 
