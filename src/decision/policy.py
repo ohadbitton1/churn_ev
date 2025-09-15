@@ -1,7 +1,8 @@
 # src/decision/policy.py
 from __future__ import annotations
 
-from typing import Dict, Iterable, Literal
+from collections.abc import Iterable
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -22,9 +23,7 @@ def _unit_expected_value_no_action() -> float:
     return 0.0
 
 
-def decide_single_threshold(
-    p: float, thr: float, costs: CostConfig
-) -> Dict[str, float | str]:
+def decide_single_threshold(p: float, thr: float, costs: CostConfig) -> dict[str, float | str]:
     """
     Simple policy: intervene if p >= thr, else no action.
     Returns dict with action and EV for this single sample.
@@ -44,7 +43,7 @@ def decide_tiered(
     t_high: float,
     costs_low: CostConfig,
     costs_high: CostConfig,
-) -> Dict[str, float | str]:
+) -> dict[str, float | str]:
     """
     Tiered policy:
       p >= t_high -> expensive_intervention

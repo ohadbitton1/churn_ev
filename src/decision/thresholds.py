@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -26,7 +25,7 @@ def expected_value_for_threshold(
     y_prob: np.ndarray,
     thr: float,
     costs: CostConfig,
-) -> Tuple[float, Tuple[int, int, int, int]]:
+) -> tuple[float, tuple[int, int, int, int]]:
     """Return (EV, (tn, fp, fn, tp)) for a given threshold."""
     y_pred = (y_prob >= thr).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred, labels=[0, 1]).ravel()
@@ -65,7 +64,7 @@ def sweep_thresholds(
     return pd.DataFrame(rows)
 
 
-def choose_optimal_threshold(df_curve: pd.DataFrame) -> Dict[str, float]:
+def choose_optimal_threshold(df_curve: pd.DataFrame) -> dict[str, float]:
     """Pick the threshold with maximum EV; return a small summary dict."""
     if df_curve.empty:
         raise ValueError("df_curve is empty")

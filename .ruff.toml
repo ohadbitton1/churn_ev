@@ -1,0 +1,14 @@
+line-length = 100
+target-version = "py311"
+fix = true
+
+[lint]
+select = ["E", "F", "I", "UP"]
+ignore = []
+
+[lint.isort]
+known-first-party = ["src", "api", "tests"]
+
+[lint.per-file-ignores]
+"notebooks/*" = ["E401", "E402", "F401", "E501"]
+"scripts/run_threshold_sweep.py" = ["E501"]

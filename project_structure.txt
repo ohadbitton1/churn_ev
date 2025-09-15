@@ -1,0 +1,143 @@
+Folder PATH listing for volume Windows
+Volume serial number is 92CE-B07A
+C:.
+�   .gitignore
+�   .pre-commit-config.yaml
+�   project_structure.txt
+�   pytest.ini
+�   README.md
+�   requirements.txt
+�   
+����.pytest_cache
+�   �   .gitignore
+�   �   CACHEDIR.TAG
+�   �   README.md
+�   �   
+�   ����v
+�       ����cache
+�               nodeids
+�               stepwise
+�               
+����.ruff_cache
+�   �   .gitignore
+�   �   CACHEDIR.TAG
+�   �   
+�   ����0.6.3
+�           10620537153170905936
+�           12385341235490699050
+�           1388300030856612181
+�           17310465920786650256
+�           20283618995688024
+�           4600526622796824945
+�           5980319639282586873
+�           7175104485652421266
+�           9974356070100096223
+�           
+����api
+�   �   main.py
+�   �   
+�   ����__pycache__
+�           main.cpython-311.pyc
+�           
+����artifacts
+�   ����decisions
+�           config.json
+�           costs.json
+�           decision_curve.csv
+�           decision_curve.png
+�           
+����data
+�   �   .gitkeep
+�   �   val_y_prob.csv
+�   �   val_y_true.csv
+�   �   
+�   ����interim
+�   ����processed
+�   ����raw
+�           telco_churn.csv
+�           
+����models
+�       best_pipeline.pkl
+�       feature_importance_top.csv
+�       metadata.json
+�       
+����monitoring
+�   ����reports
+�           .gitkeep
+�           
+����notebooks
+�       .gitkeep
+�       01_eda_baseline.ipynb
+�       02_feature_engineering_models.ipynb
+�       
+����scripts
+�   �   run_threshold_sweep.py
+�   �   
+�   ����__pycache__
+�           run_threshold_sweep.cpython-311.pyc
+�           
+����src
+�   �   __init__.py
+�   �   
+�   ����data
+�   �   �   dataset.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����decision
+�   �   �   costs.py
+�   �   �   policy.py
+�   �   �   report.py
+�   �   �   thresholds.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           costs.cpython-311.pyc
+�   �           policy.cpython-311.pyc
+�   �           report.cpython-311.pyc
+�   �           thresholds.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����features
+�   �   �   build_features.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           build_features.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����models
+�   �   �   predict.py
+�   �   �   train.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           predict.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����utils
+�   �   �   config.py
+�   �   �   io.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           config.cpython-311.pyc
+�   �           io.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����__pycache__
+�           __init__.cpython-311.pyc
+�           
+����tests
+�   �   test_decision_layer.py
+�   �   test_smoke.py
+�   �   
+�   ����__pycache__
+�           test_decision_layer.cpython-311-pytest-8.3.2.pyc
+�           test_smoke.cpython-311-pytest-8.3.2.pyc
+�           
+����__pycache__
+        app.cpython-311.pyc
+        

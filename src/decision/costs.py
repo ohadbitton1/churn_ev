@@ -18,7 +18,7 @@ class CostConfig:
     TN_cost: float = 0.0  # usually zero
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "CostConfig":
+    def from_dict(cls, d: dict[str, Any]) -> CostConfig:
         return cls(
             FN_cost=float(d.get("FN_cost", 5.0)),
             FP_cost=float(d.get("FP_cost", 1.0)),

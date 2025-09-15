@@ -2,15 +2,15 @@
   "model_type": "xgb",
   "best_params": {
     "model_type": "xgb",
-    "xgb_n_estimators": 201,
+    "xgb_n_estimators": 679,
     "xgb_max_depth": 4,
-    "xgb_lr": 0.026604318470071057,
-    "xgb_subsample": 0.6794910626490949,
-    "xgb_colsample": 0.8538589681187536,
-    "xgb_alpha": 0.00012548964513500356,
-    "xgb_lambda": 8.088844275488134,
-    "xgb_min_child_weight": 4,
-    "xgb_gamma": 3.9520539561675396
+    "xgb_lr": 0.06139407172509567,
+    "xgb_subsample": 0.8496706063048791,
+    "xgb_colsample": 0.7857466464862991,
+    "xgb_alpha": 3.223882195537856e-05,
+    "xgb_lambda": 9.984111524261742,
+    "xgb_min_child_weight": 3,
+    "xgb_gamma": 4.398403650674861
   },
   "feature_names": [
     "num__SeniorCitizen",

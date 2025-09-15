@@ -19,12 +19,8 @@ from src.utils.io import ensure_dir, save_json, utcnow_iso
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--ytrue", required=True, help="CSV with column y_true or a 1-col CSV."
-    )
-    ap.add_argument(
-        "--yprob", required=True, help="CSV with column y_prob or a 1-col CSV."
-    )
+    ap.add_argument("--ytrue", required=True, help="CSV with column y_true or a 1-col CSV.")
+    ap.add_argument("--yprob", required=True, help="CSV with column y_prob or a 1-col CSV.")
     ap.add_argument("--step", type=float, default=0.005)
     ap.add_argument("--outdir", default="artifacts/decisions")
     ap.add_argument("--model_version", default="v1")

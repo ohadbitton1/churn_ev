@@ -16,9 +16,7 @@ def test_expected_value_shapes():
     y_prob = np.array([0.1, 0.2, 0.8, 0.9])
     costs = CostConfig(FN_cost=5, FP_cost=1, TP_intervention_cost=0.5, TN_cost=0)
 
-    ev, (tn, fp, fn, tp) = expected_value_for_threshold(
-        y_true, y_prob, thr=0.5, costs=costs
-    )
+    ev, (tn, fp, fn, tp) = expected_value_for_threshold(y_true, y_prob, thr=0.5, costs=costs)
     # With thr=0.5 -> preds = [0,0,1,1] so cm: tn=2, fp=0, fn=0, tp=2
     assert (tn, fp, fn, tp) == (2, 0, 0, 2)
     # Total cost = tp*0.5 = 1.0, EV = -1.0
