@@ -2,13 +2,15 @@
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 import joblib
 import pandas as pd
-from fastapi import Depends, FastAPI, HTTPException, status  # removed Header
+from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 # ---------- Paths & ENV ----------
@@ -17,6 +19,8 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 MODEL_PATH = Path(os.getenv("MODEL_PATH", BASE_DIR / "models" / "best_pipeline.pkl"))
 META_PATH = Path(os.getenv("META_PATH", BASE_DIR / "models" / "metadata.json"))
 FEATIMP_PATH = Path(os.getenv("FEATIMP_PATH", BASE_DIR / "models" / "feature_importance_top.csv"))
+MONITORING_REPORTS_DIR = BASE_DIR / "monitoring" / "reports"
+METRICS_CSV = BASE_DIR / "monitoring" / "metrics.csv"  # simple CSV log
 
 API_KEY = os.getenv("API_KEY", "dev-key-change-me")
 APP_VERSION = os.getenv("APP_VERSION", "0.1.0")
@@ -28,7 +32,6 @@ sys.path.extend([str(ROOT), str(ROOT / "src")])
 # Support both "features.*" and "src.features.*" import styles
 try:
     from src.features.build_features import AddFeatures  # noqa: F401
-
 except ModuleNotFoundError:
     from src.features.build_features import AddFeatures  # noqa: F401
 
@@ -87,11 +90,16 @@ service_version = metadata.get("version", APP_VERSION)
 app = FastAPI(
     title="Churn Early Warning",
     version=service_version,
-    description="Predict churn risk and return a cost-aware decision.",
+    description=(
+        "Predict churn risk and return a cost-aware decision.\n\n"
+        "## Monitoring Links\n"
+        "- [Latest Drift Report](http://127.0.0.1:8080/monitoring/latest)\n"
+        "- [Metrics Summary](http://127.0.0.1:8080/metrics/summary)\n\n"
+        "Use **Authorize** with API key `dev-key-change-me` for secured endpoints."
+    ),
 )
 
 # ---------- Security (proper Swagger 'Authorize' button) ----------
-# This is the key change: using FastAPI's HTTPBearer security dependency.
 bearer_scheme = HTTPBearer(auto_error=True)
 
 
@@ -106,6 +114,37 @@ def api_key_guard(credentials: HTTPAuthorizationCredentials = Depends(bearer_sch
     return True
 
 
+# ---------- Simple CSV metrics logging middleware ----------
+# Meaning: record (timestamp, method, path, status, duration_ms) into monitoring/metrics.csv
+(METRICS_CSV.parent).mkdir(parents=True, exist_ok=True)
+if not METRICS_CSV.exists():
+    METRICS_CSV.write_text("timestamp,method,path,status,duration_ms\n", encoding="utf-8")
+
+
+@app.middleware("http")
+async def metrics_logger(request: Request, call_next):
+    start = time.perf_counter()
+    try:
+        response: Response = await call_next(request)
+        status_code = response.status_code
+    except Exception:
+        status_code = 500
+        raise
+    finally:
+        duration_ms = int((time.perf_counter() - start) * 1000)
+        path = str(request.url.path).replace(",", " ").replace("\n", " ")
+        ts = pd.Timestamp.utcnow().isoformat()
+        method = request.method
+        line = f"{ts},{method},{path},{status_code},{duration_ms}\n"
+        try:
+            with METRICS_CSV.open("a", encoding="utf-8") as f:
+                f.write(line)
+        except Exception:
+            # Best-effort; don't crash requests if write fails
+            pass
+    return response
+
+
 # ---------- Schemas ----------
 class ScoreRequest(BaseModel):
     features: dict[str, Any] = Field(..., description="Feature dictionary of a single customer")
@@ -117,6 +156,14 @@ class ScoreResponse(BaseModel):
     expected_value: float
     action: str
     top_features: list[str] = []
+
+
+class BatchScoreRequest(BaseModel):
+    items: list[ScoreRequest]
+
+
+class BatchScoreResponseItem(ScoreResponse):
+    customerID: str | None = None  # echo back if present
 
 
 # ---------- Decision & EV ----------
@@ -160,6 +207,22 @@ def choose_action_and_ev(p: float, threshold: float, costs: dict[str, float]):
     return decision, ev, action
 
 
+# ---------- Input prep (robust to common Telco quirks) ----------
+def _prepare_input_one(d: dict[str, Any]) -> pd.DataFrame:
+    """
+    Prepare a single-row DataFrame; add numeric TotalCharges_num if needed,
+    and drop label-like columns if they accidentally arrive.
+    """
+    df = pd.DataFrame([d]).copy()
+    if "TotalCharges_num" not in df.columns and "TotalCharges" in df.columns:
+        with pd.option_context("mode.copy_on_write", True):
+            df["TotalCharges_num"] = pd.to_numeric(df["TotalCharges"], errors="coerce")
+    for c in ["Churn", "churn", "Churn_Yes", "ChurnBinary", "ChurnLabel"]:
+        if c in df.columns:
+            df.drop(columns=[c], inplace=True, errors="ignore")
+    return df
+
+
 # ---------- Endpoints ----------
 @app.get("/health")
 def health():
@@ -194,7 +257,7 @@ def score(req: ScoreRequest):
         raise HTTPException(status_code=500, detail="Model not loaded")
 
     try:
-        X = pd.DataFrame([req.features])
+        X = _prepare_input_one(req.features)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid features format: {e}")
 
@@ -222,14 +285,6 @@ def score(req: ScoreRequest):
     )
 
 
-class BatchScoreRequest(BaseModel):
-    items: list[ScoreRequest]
-
-
-class BatchScoreResponseItem(ScoreResponse):
-    customerID: str | None = None  # echo back if present
-
-
 @app.post(
     "/score/batch",
     response_model=list[BatchScoreResponseItem],
@@ -245,7 +300,7 @@ def score_batch(req: BatchScoreRequest):
 
     for item in req.items:
         try:
-            X = pd.DataFrame([item.features])
+            X = _prepare_input_one(item.features)
             if hasattr(model, "predict_proba"):
                 proba = float(model.predict_proba(X)[:, 1][0])
             elif hasattr(model, "predict"):
@@ -269,3 +324,20 @@ def score_batch(req: BatchScoreRequest):
         )
 
     return results
+
+
+# ---------- Static & Monitoring routes ----------
+# Mount static reports under a distinct path to avoid clashing with API routes.
+MONITORING_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+app.mount(
+    "/monitoring/reports",
+    StaticFiles(directory=str(MONITORING_REPORTS_DIR), html=True),
+    name="monitoring-reports",
+)
+
+# Attach API routes
+from api.metrics_routes import router as metrics_router  # noqa: E402
+from api.monitoring_routes import router as monitoring_router  # noqa: E402
+
+app.include_router(monitoring_router)
+app.include_router(metrics_router)

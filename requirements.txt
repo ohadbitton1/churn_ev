@@ -16,7 +16,7 @@ python-dotenv==1.0.1
 
 # Tracking & Monitoring
 mlflow==2.15.1
-evidently==0.4.38
+evidently==0.4.31
 
 # Dev quality
 pytest==8.3.2

@@ -1,0 +1,14 @@
+[OK] New drift report: C:/Users/97254/Desktop/churn_ev/monitoring/reports/20250916_200206-drift.html
+Traceback (most recent call last):
+  File "C:\Users\97254\Desktop\churn_ev\scripts\auto_drift.py", line 119, in <module>
+    main()
+  File "C:\Users\97254\Desktop\churn_ev\scripts\auto_drift.py", line 115, in main
+    print(f"[OK] No pruning needed; {len(list_reports())} report(s) \u2264 keep={args.keep}.")
+  File "C:\Program Files\Python311\Lib\encodings\cp1255.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2264' in position 36: character maps to <undefined>
+[INFO] Start at 2025-09-16T20:06:23
+[OK] New drift report: C:/Users/97254/Desktop/churn_ev/monitoring/reports/20250916_200625-drift.html
+[OK] No pruning needed; 3 report(s) <= keep=20.
+[INFO] Done.
