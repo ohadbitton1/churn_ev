@@ -1,18 +1,25 @@
-# monitoring/run_drift.py
+#!/usr/bin/env python
 """
-Generate Evidently drift report between a reference and a current CSV.
+Generate an Evidently drift HTML report comparing a reference CSV to a current CSV.
 
 Usage (from repo root):
+  # simplest (uses data/reference.csv and data/current.csv)
+  python monitoring/run_drift.py
+
+  # explicit paths
   python monitoring/run_drift.py --reference data/reference.csv --current data/current.csv
 
-Prints the absolute path of the created HTML report on success.
-Works with evidently>=0.7.x.
+Outputs:
+  monitoring/reports/<timestamp>-drift.html
+
+Notes:
+- If a model artifact exists (models/best_pipeline.pkl), we add a 'prediction'
+  probability column to both datasets (best-effort; failure is non-fatal).
+- Works with evidently>=0.7.x.
 """
 from __future__ import annotations
 
 import argparse
-import json
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -26,25 +33,20 @@ from evidently.report import Report
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MODELS_DIR = REPO_ROOT / "models"
 REPORTS_DIR = REPO_ROOT / "monitoring" / "reports"
-
-MODEL_PATH = Path(
-    sys.argv and {}  # placeholder for env passthrough if desired
-)  # will fall back below if empty
-if not MODEL_PATH:
-    MODEL_PATH = MODELS_DIR / "best_pipeline.pkl"
-
-METADATA_PATH = MODELS_DIR / "metadata.json"
+DEFAULT_REF = REPO_ROOT / "data" / "reference.csv"
+DEFAULT_CUR = REPO_ROOT / "data" / "current.csv"
+MODEL_PATH = MODELS_DIR / "best_pipeline.pkl"  # <- FIX: always a Path (no dicts)
 
 
 # ---------- Helpers ----------
 def _ensure_sys_path() -> None:
-    # Make sure our custom transformers are importable during joblib.load
-    root = REPO_ROOT
-    src = REPO_ROOT / "src"
-    for p in (root, src):
+    """Make sure custom transformers are importable during joblib.load()."""
+    import sys as _sys
+
+    for p in (REPO_ROOT, REPO_ROOT / "src"):
         sp = str(p)
-        if sp not in sys.path:
-            sys.path.append(sp)
+        if sp not in _sys.path:
+            _sys.path.append(sp)
 
 
 def load_pipeline() -> object | None:
@@ -59,77 +61,79 @@ def load_pipeline() -> object | None:
 
 
 def read_csv(path: Path) -> pd.DataFrame:
+    if not path.exists():
+        raise FileNotFoundError(f"CSV not found: {path}")
     return pd.read_csv(path, low_memory=False)
-
-
-def get_threshold() -> float:
-    """Read threshold from metadata.json if present; else default to 0.5."""
-    try:
-        if METADATA_PATH.exists():
-            meta = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
-            for k in ("threshold", "decision_threshold", "production_threshold"):
-                if k in meta and isinstance(meta[k], int | float):
-                    return float(meta[k])
-    except Exception:
-        pass
-    return 0.5
 
 
 def maybe_add_prediction(
     df_ref: pd.DataFrame, df_cur: pd.DataFrame, pipe: object | None
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """If a model is available, add 'prediction' prob column to both frames."""
-    if pipe is None:
-        return df_ref, df_cur
+) -> tuple[pd.DataFrame, pd.DataFrame, bool]:
+    """
+    If a model is available and has predict_proba, add 'prediction' column (p(churn)).
+    Returns (df_ref, df_cur, added_flag).
+    """
+    if pipe is None or not hasattr(pipe, "predict_proba"):
+        return df_ref, df_cur, False
     try:
-        if hasattr(pipe, "predict_proba"):
-            df_ref = df_ref.copy()
-            df_cur = df_cur.copy()
-            df_ref["prediction"] = pipe.predict_proba(df_ref)[:, 1]
-            df_cur["prediction"] = pipe.predict_proba(df_cur)[:, 1]
+        ref = df_ref.copy()
+        cur = df_cur.copy()
+        ref["prediction"] = pipe.predict_proba(ref)[:, 1]
+        cur["prediction"] = pipe.predict_proba(cur)[:, 1]
+        return ref, cur, True
     except Exception:
         # Non-fatal: just skip prediction column if it fails
-        return df_ref, df_cur
-    return df_ref, df_cur
+        return df_ref, df_cur, False
 
 
-def build_report(df_ref: pd.DataFrame, df_cur: pd.DataFrame, with_pred_metric: bool) -> Report:
+def build_report(df_ref: pd.DataFrame, df_cur: pd.DataFrame, include_pred_metric: bool) -> Report:
+    """Create an Evidently report with data drift + optional prediction drift."""
     metrics = [DataDriftPreset()]
-    if with_pred_metric and "prediction" in df_ref.columns and "prediction" in df_cur.columns:
+    if include_pred_metric and "prediction" in df_ref.columns and "prediction" in df_cur.columns:
         metrics.append(ColumnDriftMetric(column_name="prediction"))
     rep = Report(metrics=metrics)
     rep.run(reference_data=df_ref, current_data=df_cur)
     return rep
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate Evidently drift HTML report.")
-    parser.add_argument("--reference", type=Path, required=True, help="Reference CSV.")
-    parser.add_argument("--current", type=Path, required=True, help="Current CSV.")
-    parser.add_argument(
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Generate Evidently drift HTML report.")
+    p.add_argument(
+        "--reference",
+        type=Path,
+        default=DEFAULT_REF,
+        help="Reference CSV (default: data/reference.csv)",
+    )
+    p.add_argument(
+        "--current", type=Path, default=DEFAULT_CUR, help="Current CSV (default: data/current.csv)"
+    )
+    p.add_argument(
         "--outdir",
         type=Path,
         default=REPORTS_DIR,
-        help="Directory to write HTML reports.",
+        help="Output directory (default: monitoring/reports)",
     )
-    args = parser.parse_args()
+    return p.parse_args()
 
+
+def main() -> None:
+    args = parse_args()
     args.outdir.mkdir(parents=True, exist_ok=True)
 
     df_ref = read_csv(args.reference)
     df_cur = read_csv(args.current)
 
     pipe = load_pipeline()
-    df_ref, df_cur = maybe_add_prediction(df_ref, df_cur, pipe)
+    df_ref, df_cur, added_pred = maybe_add_prediction(df_ref, df_cur, pipe)
+
+    report = build_report(df_ref, df_cur, include_pred_metric=added_pred)
 
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    outfile = args.outdir / f"{ts}-drift.html"
+    out_path = args.outdir / f"{ts}-drift.html"
+    report.save_html(str(out_path))
 
-    report = build_report(df_ref, df_cur, with_pred_metric=True)
-    report.save_html(str(outfile))
-
-    # Print absolute path so automation can capture it
-    print(str(outfile.resolve()))
+    # Print absolute path so automation/scripts can capture it
+    print(str(out_path.resolve()))
 
 
 if __name__ == "__main__":

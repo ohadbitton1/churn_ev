@@ -26,3 +26,6 @@ isort==5.13.2
 ruff==0.6.3
 mypy==1.11.2
 pre-commit==3.8.0
+
+# Demo UI
+streamlit==1.38.0

@@ -1,0 +1,182 @@
+Folder PATH listing for volume Windows
+Volume serial number is 92CE-B07A
+C:.
+�   .gitignore
+�   .pre-commit-config.yaml
+�   .ruff.toml
+�   project_structure.txt
+�   pyproject.toml
+�   pytest.ini
+�   README.md
+�   requirements.txt
+�   run_drift_task.bat
+�   
+����.pytest_cache
+�   �   .gitignore
+�   �   CACHEDIR.TAG
+�   �   README.md
+�   �   
+�   ����v
+�       ����cache
+�               lastfailed
+�               nodeids
+�               stepwise
+�               
+����.ruff_cache
+�   �   .gitignore
+�   �   CACHEDIR.TAG
+�   �   
+�   ����0.6.3
+�           10596258557669961868
+�           10620537153170905936
+�           11797758809918439794
+�           12385341235490699050
+�           1388300030856612181
+�           1432147800017092836
+�           17310465920786650256
+�           17914751335429541955
+�           20283618995688024
+�           3017693452751152305
+�           3239308937671510507
+�           4600526622796824945
+�           4731997943022237865
+�           5209900634564059672
+�           5512905785946594003
+�           5764665095816406091
+�           5980319639282586873
+�           652356769323375480
+�           6812372585724200152
+�           705883379183260808
+�           7175104485652421266
+�           7202062511098666576
+�           9974356070100096223
+�           
+����api
+�   �   main.py
+�   �   metrics_routes.py
+�   �   monitoring_routes.py
+�   �   
+�   ����__pycache__
+�           main.cpython-311.pyc
+�           metrics_routes.cpython-311.pyc
+�           monitoring_routes.cpython-311.pyc
+�           
+����artifacts
+�   ����decisions
+�           config.json
+�           costs.json
+�           decision_curve.csv
+�           decision_curve.png
+�           
+����data
+�   �   .gitkeep
+�   �   current.csv
+�   �   reference.csv
+�   �   score_high.json
+�   �   score_low.json
+�   �   val_y_prob.csv
+�   �   val_y_true.csv
+�   �   
+�   ����interim
+�   ����processed
+�   ����raw
+�           telco_churn.csv
+�           
+����models
+�       best_pipeline.pkl
+�       feature_importance_top.csv
+�       metadata.json
+�       
+����monitoring
+�   �   auto_drift.log
+�   �   metrics.csv
+�   �   run_drift.py
+�   �   
+�   ����reports
+�           .gitkeep
+�           20250916_195951-drift.html
+�           20250916_200206-drift.html
+�           20250916_200625-drift.html
+�           
+����notebooks
+�       .gitkeep
+�       01_eda_baseline.ipynb
+�       02_feature_engineering_models.ipynb
+�       
+����scripts
+�   �   auto_drift.py
+�   �   run_threshold_sweep.py
+�   �   split_telco.py
+�   �   
+�   ����__pycache__
+�           run_threshold_sweep.cpython-311.pyc
+�           
+����src
+�   �   __init__.py
+�   �   
+�   ����data
+�   �   �   dataset.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����decision
+�   �   �   costs.py
+�   �   �   policy.py
+�   �   �   report.py
+�   �   �   thresholds.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           costs.cpython-311.pyc
+�   �           policy.cpython-311.pyc
+�   �           report.cpython-311.pyc
+�   �           thresholds.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����features
+�   �   �   build_features.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           build_features.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����models
+�   �   �   predict.py
+�   �   �   train.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           predict.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����utils
+�   �   �   config.py
+�   �   �   io.py
+�   �   �   __init__.py
+�   �   �   
+�   �   ����__pycache__
+�   �           config.cpython-311.pyc
+�   �           io.cpython-311.pyc
+�   �           __init__.cpython-311.pyc
+�   �           
+�   ����__pycache__
+�           __init__.cpython-311.pyc
+�           
+����tests
+�   �   test_api.py
+�   �   test_decision_layer.py
+�   �   test_load.py
+�   �   test_smoke.py
+�   �   
+�   ����__pycache__
+�           test_api.cpython-311-pytest-8.3.2.pyc
+�           test_decision_layer.cpython-311-pytest-8.3.2.pyc
+�           test_load.cpython-311-pytest-8.3.2.pyc
+�           test_smoke.cpython-311-pytest-8.3.2.pyc
+�           
+����__pycache__
+        app.cpython-311.pyc
+        
