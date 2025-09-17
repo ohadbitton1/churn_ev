@@ -1,6 +1,3 @@
-# `README.md`
-
-````markdown
 # 📉 Churn Early-Warning System
 
 End-to-end churn risk predictor with a **cost-aware decision layer**, **FastAPI API**, **monitoring & metrics**, and a **Streamlit demo UI**.
@@ -26,7 +23,7 @@ python -m pip install -r requirements.txt
 
 ---
 
-## 🚀 Run the API
+## 🚀 Run the API (local)
 
 Start the backend:
 
@@ -57,6 +54,39 @@ python -m uvicorn api.main:app --reload --port 8080
 * `GET /monitoring/list` – all drift reports
 * `GET /monitoring/latest` – newest report (JSON)
 * `GET /monitoring/latest/redirect` – open newest report HTML
+
+---
+
+## 🐳 Run with Docker
+
+The easiest way to package and run in production.
+
+1. Build image:
+
+```powershell
+docker build -t churn-ev:latest .
+```
+
+2. Run in one line (maps port 8080):
+
+```powershell
+docker run --rm -p 8080:8080 -e API_KEY=dev-key-change-me churn-ev:latest
+```
+
+3. (Optional) Persist drift reports to host machine:
+
+```powershell
+docker run --rm -p 8080:8080 `
+  -e API_KEY=dev-key-change-me `
+  -v "${PWD}/monitoring/reports:/app/monitoring/reports" `
+  churn-ev:latest
+```
+
+Quick checks:
+
+* Swagger: [http://127.0.0.1:8080/docs](http://127.0.0.1:8080/docs)
+* Metrics: [http://127.0.0.1:8080/metrics/summary](http://127.0.0.1:8080/metrics/summary)
+* Drift report: [http://127.0.0.1:8080/monitoring/latest/redirect](http://127.0.0.1:8080/monitoring/latest/redirect)
 
 ---
 
@@ -94,11 +124,13 @@ Click **Score** → you’ll see:
   ```powershell
   python monitoring/run_drift.py
   ```
+
 * Automated drift (keep 20 reports):
 
   ```powershell
   python scripts/auto_drift.py --reference data/reference.csv --current data/current.csv --keep 20
   ```
+
 * Quick links while API is running:
 
   * Metrics: [http://127.0.0.1:8080/metrics/summary](http://127.0.0.1:8080/metrics/summary)
@@ -195,9 +227,12 @@ pre-commit run -a
   ```powershell
   python -m streamlit run demo/app.py --server.port 8501
   ```
+
 * **401 Unauthorized** → paste token in Swagger + sidebar.
+
 * **API not reachable** → check API log; test `http://127.0.0.1:8080/health`.
+
 * **Model not loaded** → confirm `models/best_pipeline.pkl` exists.
 
-
+```
 

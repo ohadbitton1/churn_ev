@@ -1,0 +1,36 @@
+# VCS / editor
+.git
+.gitignore
+.vscode
+.idea
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.dist/
+build/
+dist/
+.venv/
+venv/
+
+# Notebooks & checkpoints
+notebooks/
+.ipynb_checkpoints/
+
+# Tool caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# Large or local-only data
+data/raw/
+data/interim/
+monitoring/reports/
+
+# OS junk
+.DS_Store
+Thumbs.db
