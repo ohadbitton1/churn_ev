@@ -1,4 +1,5 @@
 # 📉 Churn Early-Warning System
+[![CI](https://github.com/ohadbitton1/churn_ev/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ohadbitton1/churn_ev/actions/workflows/ci.yml)
 
 End-to-end churn risk predictor with a **cost-aware decision layer**, **FastAPI API**, **monitoring & metrics**, and a **Streamlit demo UI**.
 
