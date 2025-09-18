@@ -124,7 +124,7 @@ with st.sidebar:
     st.subheader("Quick Links")
     swagger_url = f"{api_url.rstrip('/')}/docs"
     metrics_url = f"{api_url.rstrip('/')}/metrics/summary"
-    latest_drift_url = f"{api_url.rstrip('/')}/monitoring/latest"
+    latest_drift_url = f"{api_url.rstrip('/')}/monitoring/latest/redirect"
 
     st.markdown(f"- [Swagger UI]({swagger_url})")
     st.markdown(f"- [Metrics Summary]({metrics_url})")

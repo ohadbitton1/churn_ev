@@ -22,6 +22,10 @@ logs/
 outputs/
 reports/
 
+#monitoring
+monitoring/metrics.csv
+
+
 # OS
 .DS_Store
 Thumbs.db
