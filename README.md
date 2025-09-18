@@ -236,5 +236,19 @@ pre-commit run -a
 
 * **Model not loaded** → confirm `models/best_pipeline.pkl` exists.
 
-```
+---
+
+## Demo Screenshots
+
+### Main UI
+![Main UI](docs/screenshot_ui.png)
+
+### Example result (Low-risk customer)
+![Low Risk Result](docs/screenshot_low.png)
+
+### Monitoring Drift Report
+![Drift Report](docs/screenshot_drift.png)
+
+### Decision Curve
+![Decision Curve](artifacts/decisions/decision_curve.png)
 
